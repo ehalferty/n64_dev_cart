@@ -45,7 +45,7 @@ package N64DevCartMainTesters {
         step(1)
         poke(dut.io.n64readn, false.B)
         step(1)
-        expect(dut.io.n64ado, 18.U(16.W))
+        expect(dut.io.n64ado, 19.U(16.W))
 
         
     //       poke(dut.io.address, i.U(32.W))
