@@ -46,20 +46,6 @@ package N64DevCartMainTesters {
         poke(dut.io.n64readn, false.B)
         step(1)
         expect(dut.io.n64ado, 19.U(16.W))
-
-        
-    //       poke(dut.io.address, i.U(32.W))
-    //       step(WriteAndReadData.SRAM_DELAY)
-    //       expect(dut.io.readData, 0.U(32.W))
-        //
-        //   step(10)
-        // expect(dut.io.n64ado, 2.U(16.W))
-        // poke(dut.io.adi, 0.U(16.W))
-        // poke(dut.io.n64adi, false.B)
-        // step(1)
-        //   poke(dut.io.readn, 1.U(1.W))
-        //   expect(dut.io.)
-
     }
 }
 
