@@ -1,0 +1,37 @@
+[
+  {
+    "class":"firrtl.transforms.BlackBoxInlineAnno",
+    "target":"N64DevCartMain.N64DevCartMain",
+    "name":"N64DevCartMain.N64DevCartMain.memory.v",
+    "text":"module BindsTo_0_N64DevCartMain(\n  input         clock,\n  input         reset,\n  input  [15:0] io_n64adi,\n  input         io_n64readn,\n  input         io_n64alel,\n  input         io_n64aleh,\n  output [15:0] io_n64ado\n);\n\ninitial begin\n  $readmemh(\"/Users/ed/n64/dx-explo/explode/rom.hex.txt\", N64DevCartMain.memory);\nend\n                      endmodule\n\nbind N64DevCartMain BindsTo_0_N64DevCartMain BindsTo_0_N64DevCartMain_Inst(.*);"
+  },
+  {
+    "class":"logger.LogLevelAnnotation",
+    "globalLogLevel":{
+      
+    }
+  },
+  {
+    "class":"firrtl.options.TargetDirAnnotation",
+    "directory":"chisel_output"
+  },
+  {
+    "class":"firrtl.EmitCircuitAnnotation",
+    "emitter":"firrtl.VerilogEmitter"
+  },
+  {
+    "class":"firrtl.annotations.LoadMemoryAnnotation",
+    "target":"N64DevCartMain.N64DevCartMain.memory",
+    "fileName":"/Users/ed/n64/dx-explo/explode/rom.hex.txt",
+    "hexOrBinary":"h",
+    "originalMemoryNameOpt":"memory"
+  },
+  {
+    "class":"firrtl.options.OutputAnnotationFileAnnotation",
+    "file":"N64DevCartMain"
+  },
+  {
+    "class":"firrtl.transforms.BlackBoxTargetDirAnno",
+    "targetDir":"chisel_output"
+  }
+]

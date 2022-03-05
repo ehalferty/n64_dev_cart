@@ -1,0 +1,125 @@
+$date
+2022-03-05T08:03+0000
+$end
+$version
+0.2
+$end
+$comment
+
+$end
+$timescale 1ps  $end
+$scope module N64DevCartMain $end
+ $var wire 16 ! memory_16 $end
+ $var wire 16 " memory_22 $end
+ $var wire 32 # addr $end
+ $var wire 16 $ io_n64ado $end
+ $var wire 16 % memory_10 $end
+ $var wire 16 & memory_19 $end
+ $var wire 16 ' memory_13 $end
+ $var wire 16 ( memory_1 $end
+ $var wire 16 ) memory_4 $end
+ $var wire 1 * io_n64aleh $end
+ $var wire 16 + memory_7 $end
+ $var wire 1 , io_n64readn $end
+ $var wire 16 - memory_21 $end
+ $var wire 16 . memory_15 $end
+ $var wire 16 / memory_18 $end
+ $var wire 16 0 memory_24 $end
+ $var wire 16 1 memory_9 $end
+ $var wire 16 2 memory_0 $end
+ $var wire 16 3 memory_12 $end
+ $var wire 1 4 clock $end
+ $var wire 16 5 memory_3 $end
+ $var wire 16 6 memory_23 $end
+ $var wire 16 7 memory_6 $end
+ $var wire 16 8 memory_11 $end
+ $var wire 16 9 memory_20 $end
+ $var wire 16 : memory_14 $end
+ $var wire 16 ; memory_17 $end
+ $var wire 16 < memory_5 $end
+ $var wire 1 = reset $end
+ $var wire 16 > io_n64adi $end
+ $var wire 16 ? memory_8 $end
+ $var wire 16 @ memory_2 $end
+ $var wire 1 A io_n64alel $end
+$upscope $end
+$enddefinitions $end
+$dumpvars
+b0110010011111100 $
+b0000000000111101 ;
+b0000000000000101 @
+xA
+bxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx #
+b0000000000010111 ?
+b0000000000011101 1
+b0000000000111011 !
+b0000000000000111 5
+bxxxxxxxxxxxxxxxx >
+b0000000000010011 +
+b0000000000011111 %
+b0000000000000011 (
+b0000000001010011 "
+04
+x*
+b0000000000100101 8
+x,
+b0000000001000011 /
+b0000000000110101 .
+b0000000000101111 :
+b0000000000010001 7
+b0000000000001101 <
+b0000000000101001 3
+b0000000000000010 2
+x=
+b0000000000001011 )
+b0000000001001001 9
+b0000000001000111 &
+b0000000001011001 6
+b0000000001001111 -
+b0000000000101011 '
+b0000000001100001 0
+$end
+#0
+1=
+#1
+b0000000000000010 $
+b0110000100000001 $
+b00000000000000000000000000000000 #
+14
+#2
+04
+#3
+14
+#4
+04
+#5
+14
+#6
+04
+#7
+14
+#8
+04
+#9
+14
+#10
+1A
+0=
+0*
+b0000000000000000 >
+04
+#11
+14
+#12
+0A
+b0000000000000100 >
+04
+#13
+b0000000000000101 $
+14
+b00000000000000000000000000000100 #
+#14
+0,
+04
+#15
+14
