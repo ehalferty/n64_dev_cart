@@ -2,8 +2,8 @@
   {
     "class":"firrtl.transforms.BlackBoxInlineAnno",
     "target":"N64DevCartMain.N64DevCartMain",
-    "name":"N64DevCartMain.N64DevCartMain.memory.v",
-    "text":"module BindsTo_0_N64DevCartMain(\n  input         clock,\n  input         reset,\n  input  [15:0] io_n64adi,\n  input         io_n64readn,\n  input         io_n64alel,\n  input         io_n64aleh,\n  output [15:0] io_n64ado\n);\n\ninitial begin\n  $readmemh(\"/Users/ed/n64/dx-explo/explode/rom.hex.txt\", N64DevCartMain.memory);\nend\n                      endmodule\n\nbind N64DevCartMain BindsTo_0_N64DevCartMain BindsTo_0_N64DevCartMain_Inst(.*);"
+    "name":"N64DevCartMain.N64DevCartMain._T.v",
+    "text":"module BindsTo_0_N64DevCartMain(\n  input         clock,\n  input         reset,\n  input  [15:0] io_n64adi,\n  input         io_n64readn,\n  input         io_n64alel,\n  input         io_n64aleh,\n  output [15:0] io_n64ado\n);\n\ninitial begin\n  $readmemh(\"/Users/ed/n64/dx-explo/explode/rom.hex.txt\", N64DevCartMain._T);\nend\n                      endmodule\n\nbind N64DevCartMain BindsTo_0_N64DevCartMain BindsTo_0_N64DevCartMain_Inst(.*);"
   },
   {
     "class":"logger.LogLevelAnnotation",
@@ -21,10 +21,10 @@
   },
   {
     "class":"firrtl.annotations.LoadMemoryAnnotation",
-    "target":"N64DevCartMain.N64DevCartMain.memory",
+    "target":"N64DevCartMain.N64DevCartMain._T",
     "fileName":"/Users/ed/n64/dx-explo/explode/rom.hex.txt",
     "hexOrBinary":"h",
-    "originalMemoryNameOpt":"memory"
+    "originalMemoryNameOpt":"_T"
   },
   {
     "class":"firrtl.options.OutputAnnotationFileAnnotation",
