@@ -7,10 +7,10 @@ reg [15:0] data_reg = 0;
 assign data = data_reg;
 reg [15:0] rom_data[0:((2**18)-1)];
 initial begin
-  $readmemh("/Users/ed/n64/dx-explo/explode/rom.hex.txt", rom_data);
+  $readmemh("../src/rom/rom.hex.txt", rom_data);
 end
 always @(posedge clk)
 begin
-    data_reg <= rom_data[addr];
+    data_reg <= rom_data[addr >> 2];
 end
 endmodule

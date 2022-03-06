@@ -14,7 +14,7 @@ module Main(
   assign N64_INT4 = 1;
 
   // Only output if read is asserted!
-  assign N64_AD = N64_READ_N ? n64DevCartMain_ado : 16'bZ;
+  assign N64_AD = N64_READ_N ? 16'bZ : n64DevCartMain_ado;
 
   CartRom CartRom_0(.clk(clk), .addr(romAddr), .data(romData));
 
