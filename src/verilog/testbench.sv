@@ -27,7 +27,9 @@ module MainWrapper_testbench;
         N64_AD_o = 16'h0000; N64_ALE_L = 0; #10 // Clock in address low
         write = 0; // Set AD direction to read
         N64_READ_N = 0; #10 // Clock in read
-        N64_READ_N = 1; #10 N64_READ_N = 0; // Clock in next read
+        N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
+        N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
+        N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
         
         #1000;
         $finish();

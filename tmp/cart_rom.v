@@ -11,6 +11,6 @@ initial begin
 end
 always @(posedge clk)
 begin
-    data_reg <= rom_data[addr >> 2];
+    data_reg <= rom_data[addr >> 1];
 end
 endmodule
