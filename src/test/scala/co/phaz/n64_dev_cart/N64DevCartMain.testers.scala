@@ -10,7 +10,7 @@ class N64DevCartMainSpec extends FlatSpec with Matchers {
   it should "do stuff" in {
     chisel3.iotesters.Driver.execute(
       Array("--fint-write-vcd", "--backend-name", "firrtl"),
-      () => new N64DevCartMain(true),
+      () => new N64DevCartMain(),
     ) { c =>
       new N64DevCartMainTesters.ReadWords(c)
     } should be(true)
