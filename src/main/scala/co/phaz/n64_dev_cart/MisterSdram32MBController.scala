@@ -84,7 +84,7 @@ class MisterSdram32MBController() extends Module {
                 refreshState := 2
                 waitCounter := 0
             }.elsewhen (refreshState == 2) {
-                when (waitCounter > 10) { // TODO: Tweak this value?
+                when (waitCounter > 5) { // TODO: Tweak this value? (60ns, so what's that? 3 50mhz cycles?) (50mhz/(1/(60ns)))
                     refreshState := 0 // Back to idle
                 }.otherwise {
                     io.sdram_we := true.B
@@ -97,7 +97,7 @@ class MisterSdram32MBController() extends Module {
             // TODO: Do writing stuff
         }.elsewhen (readState != 0) {
             // TODO: Do reading stuff
-        }.elsewhen (refreshCounter > 2000.U) { // TODO: Tweak this value?
+        }.elsewhen (refreshCounter > 300.U) { // TODO: Tweak this value? (8192 times each 64ms, so that's what? every 390 50mhz cycles?) (50mhz/(1/((64ms)/8192)))
             // Idle and need to do a refresh, so start it
             refreshState := 1
             refreshCounter := 0
