@@ -54,6 +54,7 @@ class MisterSdram32MBController() extends Module {
         val sdram_ras = Output(Bool())
         val sdram_cs1 = Output(Bool())
         val sdram_ba = Output(UInt(2.W))
+        val sdram_clk = Output(Bool())
 
         val writeport_wr = Input(Bool())
         val writeport_addr = Input(UInt(32.W))
@@ -69,24 +70,46 @@ class MisterSdram32MBController() extends Module {
     val writeState = RegInit(0.U(4.W))
     val readState = RegInit(0.U(4.W))
     val refreshCounter = RegInit(0.W(32.W))
-    when (refreshState != 0) {
-        // TODO: Refresh stuff
-    }.elsewhen (writeState != 0) {
-        // TODO: Do writing stuff
-    }.elsewhen (readState != 0) {
-        // TODO: Do reading stuff
-    }.elsewhen (refreshCounter > 2000.U) { // TODO: Tweak this value?
-        // Idle and need to do a refresh, so start it
-        refreshState := 1
-        refreshCounter := 0
-    }.elsewhen (io.writeport_wr) {
-        // User is starting a write on the write port...
-        writeState := 1
-    }.elsewhen (io.readport_rd) {
-        // User is starting a read on the read port...
-        writeState := 1
-    }.otherwise {
-        // Idle, wait for refresh...
-        refreshCounter := refreshCounter + 1;
+    val sdramClk = RegInit(false.B)
+    val waitCounter = RegInit(0.U(4.W))
+    sdramClk := ~sdramClk
+    io.sdram_clk := sdramClk
+    when (sdramClk) {
+        when (refreshState != 0) {
+            when (refreshState == 1) {
+                // Bippity-boppity, give him the zoppity
+                io.sdram_we := true.B
+                io.sdram_cas := false.B
+                io.sdram_ras := false.B
+                refreshState := 2
+                waitCounter := 0
+            }.elsewhen (refreshState == 2) {
+                when (waitCounter > 10) { // TODO: Tweak this value?
+                    refreshState := 0 // Back to idle
+                }.otherwise {
+                    io.sdram_we := true.B
+                    io.sdram_cas := true.B
+                    io.sdram_ras := true.B
+                    waitCounter := waitCounter + 1
+                }
+            }
+        }.elsewhen (writeState != 0) {
+            // TODO: Do writing stuff
+        }.elsewhen (readState != 0) {
+            // TODO: Do reading stuff
+        }.elsewhen (refreshCounter > 2000.U) { // TODO: Tweak this value?
+            // Idle and need to do a refresh, so start it
+            refreshState := 1
+            refreshCounter := 0
+        }.elsewhen (io.writeport_wr) {
+            // User is starting a write on the write port...
+            writeState := 1
+        }.elsewhen (io.readport_rd) {
+            // User is starting a read on the read port...
+            writeState := 1
+        }.otherwise {
+            // Idle, wait for refresh...
+            refreshCounter := refreshCounter + 1;
+        }
     }
 }
