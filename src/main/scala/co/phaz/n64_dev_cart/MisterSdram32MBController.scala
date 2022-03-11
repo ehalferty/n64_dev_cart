@@ -72,28 +72,36 @@ class MisterSdram32MBController() extends Module {
     val refreshCounter = RegInit(0.W(32.W))
     val sdramClk = RegInit(false.B)
     val waitCounter = RegInit(0.U(4.W))
+    def outputNOP { io.sdram_we := true.B; io.sdram_cas := true.B ; io.sdram_ras := true.B }
+    def outputRefresh { io.sdram_we := true.B; io.sdram_cas := false.B ; io.sdram_ras := false.B }
+    def outputBankActivate { io.sdram_we := true.B; io.sdram_cas := true.B ; io.sdram_ras := false.B }
     sdramClk := ~sdramClk
     io.sdram_clk := sdramClk
+    io.sdram_ba := 0 // Just use one bank for now
     when (sdramClk) {
         when (refreshState != 0) {
             when (refreshState == 1) {
                 // Bippity-boppity, give him the zoppity
-                io.sdram_we := true.B
-                io.sdram_cas := false.B
-                io.sdram_ras := false.B
+                outputRefresh
                 refreshState := 2
                 waitCounter := 0
             }.elsewhen (refreshState == 2) {
                 when (waitCounter > 5) { // TODO: Tweak this value? (60ns, so what's that? 3 50mhz cycles?) (50mhz/(1/(60ns)))
                     refreshState := 0 // Back to idle
+                    outputRefresh
                 }.otherwise {
-                    io.sdram_we := true.B
-                    io.sdram_cas := true.B
-                    io.sdram_ras := true.B
+                    outputNOP
                     waitCounter := waitCounter + 1
                 }
             }
         }.elsewhen (writeState != 0) {
+            when (writeState == 1) { // Bank activate
+                outputBankActivate
+                writeState := 2
+                waitCounter := 0
+            }.elsewhen (writeState == 2) {
+                //
+            }
             // TODO: Do writing stuff
         }.elsewhen (readState != 0) {
             // TODO: Do reading stuff
