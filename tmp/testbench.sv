@@ -2,8 +2,7 @@
 module MisterSdram32MBController_testbench;
     reg clk = 0;
     reg rst = 0;
-    reg [15:0] sdram_dq_in = 0;
-    wire [15:0] sdram_dq_out;
+    reg [15:0] sdram_dq;
     wire [11:0] sdram_a;
     wire sdram_we;
     wire sdram_cas;
@@ -23,8 +22,7 @@ module MisterSdram32MBController_testbench;
     MisterSdram32MBController MisterSdram32MBController_0(
         .clk(clk),
         .rst(rst),
-        .sdram_dq_in(sdram_dq_in),
-        .sdram_dq_out(sdram_dq_out),
+        .sdram_dq(sdram_dq),
         .sdram_a(sdram_a),
         .sdram_we(sdram_we),
         .sdram_cas(sdram_cas),
