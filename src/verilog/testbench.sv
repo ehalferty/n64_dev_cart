@@ -1,44 +1,69 @@
 `timescale 1ns / 1ps
-module MainWrapper_testbench;
+module MisterSdram32MBController_testbench;
     reg clk = 0;
-    wire [15:0] N64_AD;
-    reg [15:0] N64_AD_o;
-    reg write = 0;
-    assign N64_AD = (write == 1) ? N64_AD_o : 16'bZ;
-    reg N64_READ_N = 1;
-    reg N64_ALE_H = 1;
-    reg N64_ALE_L = 1;
-    wire N64_INT;
-    Main Main_0(
+    reg rst = 0;
+    reg [15:0] sdram_dq_in = 0;
+    wire [15:0] sdram_dq_out;
+    wire [11:0] sdram_a;
+    wire sdram_we;
+    wire sdram_cas;
+    wire sdram_ras;
+    wire sdram_cs1;
+    wire [1:0] sdram_ba;
+    wire sdram_clk;
+    reg writeport_wr;
+    reg [31:0] writeport_addr = 0;
+    reg [15:0] writeport_data = 0;
+    wire writeport_ack;
+    reg readport_rd = 0;
+    reg [31:0] readport_addr = 0;
+    wire [15:0] readport_data;
+    // reg readport_next = 0;
+    wire readport_ack;
+    MisterSdram32MBController MisterSdram32MBController_0(
         .clk(clk),
-        .N64_AD(N64_AD),
-        .N64_READ_N(N64_READ_N),
-        .N64_ALE_H(N64_ALE_H),
-        .N64_ALE_L(N64_ALE_L),
-        .N64_INT4(N64_INT4)
+        .rst(rst),
+        .sdram_dq_in(sdram_dq_in),
+        .sdram_dq_out(sdram_dq_out),
+        .sdram_a(sdram_a),
+        .sdram_we(sdram_we),
+        .sdram_cas(sdram_cas),
+        .sdram_ras(sdram_ras),
+        .sdram_cs1(sdram_cs1),
+        .sdram_ba(sdram_ba),
+        .sdram_clk(sdram_clk),
+        .writeport_wr(writeport_wr),
+        .writeport_addr(writeport_addr),
+        .writeport_data(writeport_data),
+        .writeport_ack(writeport_ack),
+        .readport_rd(readport_rd),
+        .readport_addr(readport_addr),
+        .readport_data(readport_data),
+        // .readport_next(readport_next),
+        .readport_ack(readport_ack)
     );
     initial
     begin
         $dumpfile("dump.vcd");
         $dumpvars(5);
         #10
-        write = 1; // Set AD direction to write
-        N64_AD_o = 16'h0000; N64_ALE_H = 0; #10 // Clock in address high
-        N64_AD_o = 16'h0000; N64_ALE_L = 0; #10 // Clock in address low
-        write = 0; // Set AD direction to read
-        N64_READ_N = 0; #10 // Clock in read
-        N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
-        N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
-        N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
-        N64_ALE_H = 1; N64_ALE_L = 1; N64_READ_N = 1; #10 // Reset for next burst
-        write = 1; // Set AD direction to write
-        N64_AD_o = 16'h0001; N64_ALE_H = 0; #10 // Clock in address high
-        N64_AD_o = 16'hB420; N64_ALE_L = 0; #10 // Clock in address low
-        write = 0; // Set AD direction to read
-        N64_READ_N = 0; #10 // Clock in read
-        N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
-        N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
-        N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
+        // write = 1; // Set AD direction to write
+        // N64_AD_o = 16'h0000; N64_ALE_H = 0; #10 // Clock in address high
+        // N64_AD_o = 16'h0000; N64_ALE_L = 0; #10 // Clock in address low
+        // write = 0; // Set AD direction to read
+        // N64_READ_N = 0; #10 // Clock in read
+        // N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
+        // N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
+        // N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
+        // N64_ALE_H = 1; N64_ALE_L = 1; N64_READ_N = 1; #10 // Reset for next burst
+        // write = 1; // Set AD direction to write
+        // N64_AD_o = 16'h0001; N64_ALE_H = 0; #10 // Clock in address high
+        // N64_AD_o = 16'hB420; N64_ALE_L = 0; #10 // Clock in address low
+        // write = 0; // Set AD direction to read
+        // N64_READ_N = 0; #10 // Clock in read
+        // N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
+        // N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
+        // N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
         
         #1000;
         $finish();
@@ -47,6 +72,67 @@ module MainWrapper_testbench;
         clk = ~clk;
     end
 endmodule
+
+
+// `timescale 1ns / 1ps
+// module MainWrapper_testbench;
+//     reg clk = 0;
+//     wire [15:0] N64_AD;
+//     reg [15:0] N64_AD_o;
+//     reg write = 0;
+//     assign N64_AD = (write == 1) ? N64_AD_o : 16'bZ;
+//     reg N64_READ_N = 1;
+//     reg N64_ALE_H = 1;
+//     reg N64_ALE_L = 1;
+//     wire N64_INT;
+//     Main Main_0(
+//         .clk(clk),
+//         .N64_AD(N64_AD),
+//         .N64_READ_N(N64_READ_N),
+//         .N64_ALE_H(N64_ALE_H),
+//         .N64_ALE_L(N64_ALE_L),
+//         .N64_INT4(N64_INT4)
+//     );
+//     initial
+//     begin
+//         $dumpfile("dump.vcd");
+//         $dumpvars(5);
+//         #10
+//         write = 1; // Set AD direction to write
+//         N64_AD_o = 16'h0000; N64_ALE_H = 0; #10 // Clock in address high
+//         N64_AD_o = 16'h0000; N64_ALE_L = 0; #10 // Clock in address low
+//         write = 0; // Set AD direction to read
+//         N64_READ_N = 0; #10 // Clock in read
+//         N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
+//         N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
+//         N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
+//         N64_ALE_H = 1; N64_ALE_L = 1; N64_READ_N = 1; #10 // Reset for next burst
+//         write = 1; // Set AD direction to write
+//         N64_AD_o = 16'h0001; N64_ALE_H = 0; #10 // Clock in address high
+//         N64_AD_o = 16'hB420; N64_ALE_L = 0; #10 // Clock in address low
+//         write = 0; // Set AD direction to read
+//         N64_READ_N = 0; #10 // Clock in read
+//         N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
+//         N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
+//         N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
+        
+//         #1000;
+//         $finish();
+//     end
+//     always #1 begin
+//         clk = ~clk;
+//     end
+// endmodule
+
+
+
+
+
+
+
+
+
+
 // `timescale 1ns / 1ps
 // module FragmentProcessorWithSRAMInterface_testbench;
 //   reg clock = 0;

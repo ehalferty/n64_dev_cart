@@ -100,28 +100,12 @@ class MisterSdram32MBController() extends Module {
         io.sdram_we := false.B; io.sdram_cas := true.B ; io.sdram_ras := false.B
         io.sdram_a := "h400".U // Set A10
     }
-    // Default values
-    io.sdram_dq_out := 0.U
-    io.sdram_a := 0.U
-    io.sdram_we := true.B
-    io.sdram_cas := true.B
-    io.sdram_ras := true.B
-    io.sdram_cs1 := false.B
-    io.sdram_ba := 0.U
-    // io.sdram_clk := false.B
-    io.writeport_ack := false.B
-    io.readport_data := 0.U
-    io.readport_ack := false.B
-
-    // Divide chisel clock by 2 to get SDRAM clock
-    sdramClk := ~sdramClk
-    io.sdram_clk := sdramClk
     // Do stuff on the cadence of the SDRAM clock
-    when (sdramClk) {
-        when (startupState != 0.U) {
+    when (sdramClk === true.B) {
+        when (startupState =/= 0.U) {
             // ================== STARTUP ==================
             // TODO: Do startup stuff
-        }.elsewhen (refreshState != 0.U) {
+        }.elsewhen (refreshState =/= 0.U) {
             // ================== REFRESH ==================
             when (refreshState === 1.U) {
                 outputRefresh
@@ -131,7 +115,7 @@ class MisterSdram32MBController() extends Module {
                 outputNOP
                 when (waitCounter > const_nopSlots) { refreshState := 0.U }.otherwise { waitCounter := waitCounter + 1.U }
             }
-        }.elsewhen (writeState != 0.U) {
+        }.elsewhen (writeState =/= 0.U) {
             // ================== WRITE ==================
             when (writeState === 1.U) { // Bank activate
                 outputBankActivate
@@ -159,7 +143,7 @@ class MisterSdram32MBController() extends Module {
                     io.writeport_ack := true.B
                 }
             }
-        }.elsewhen (readState != 0.U) {
+        }.elsewhen (readState =/= 0.U) {
             // ================== READ ==================
             when (readState === 1.U) { // Bank activate
                 outputBankActivate
@@ -193,13 +177,13 @@ class MisterSdram32MBController() extends Module {
             // Idle and need to do a refresh, so start it
             refreshState := 1.U
             refreshCounter := 0.U
-        }.elsewhen (io.writeport_wr) {
+        }.elsewhen (io.writeport_wr === true.B) {
             // ================== START WRITE ==================
             // User is starting a write on the write port...
             latchedAddr := io.writeport_addr
             latchedData := io.writeport_data
             writeState := 1.U
-        }.elsewhen (io.readport_rd) {
+        }.elsewhen (io.readport_rd === true.B) {
             // ================== START READ ==================
             // User is starting a read on the read port...
             latchedAddr := io.writeport_addr
@@ -210,4 +194,20 @@ class MisterSdram32MBController() extends Module {
             refreshCounter := refreshCounter + 1.U;
         }
     }
+
+    // Divide chisel clock by 2 to get SDRAM clock
+    sdramClk := ~sdramClk
+    io.sdram_clk := sdramClk
+    // Default values
+    io.sdram_dq_out := 0.U
+    io.sdram_a := 0.U
+    io.sdram_we := true.B
+    io.sdram_cas := true.B
+    io.sdram_ras := true.B
+    io.sdram_cs1 := false.B
+    io.sdram_ba := 0.U
+    // io.sdram_clk := false.B
+    io.writeport_ack := false.B
+    io.readport_data := 0.U
+    io.readport_ack := false.B
 }

@@ -22,18 +22,18 @@ module MisterSdram32MBController(
 );
   reg  sdramClk; // @[MisterSdram32MBController.scala 78:27]
   reg [31:0] _RAND_0;
-  wire  _T = ~sdramClk; // @[MisterSdram32MBController.scala 117:17]
-  assign io_sdram_dq_out = 16'h0; // @[MisterSdram32MBController.scala 104:21 MisterSdram32MBController.scala 97:25]
-  assign io_sdram_a = 13'h0; // @[MisterSdram32MBController.scala 105:16 MisterSdram32MBController.scala 87:20 MisterSdram32MBController.scala 96:20 MisterSdram32MBController.scala 101:20 MisterSdram32MBController.scala 87:20 MisterSdram32MBController.scala 92:20 MisterSdram32MBController.scala 101:20]
-  assign io_sdram_we = 1'h1; // @[MisterSdram32MBController.scala 106:17 MisterSdram32MBController.scala 83:37 MisterSdram32MBController.scala 82:33 MisterSdram32MBController.scala 85:21 MisterSdram32MBController.scala 82:33 MisterSdram32MBController.scala 95:21 MisterSdram32MBController.scala 82:33 MisterSdram32MBController.scala 100:21 MisterSdram32MBController.scala 82:33 MisterSdram32MBController.scala 82:33 MisterSdram32MBController.scala 85:21 MisterSdram32MBController.scala 82:33 MisterSdram32MBController.scala 90:21 MisterSdram32MBController.scala 82:33 MisterSdram32MBController.scala 100:21 MisterSdram32MBController.scala 82:33 MisterSdram32MBController.scala 82:33]
-  assign io_sdram_cas = 1'h1; // @[MisterSdram32MBController.scala 107:18 MisterSdram32MBController.scala 83:61 MisterSdram32MBController.scala 82:57 MisterSdram32MBController.scala 85:45 MisterSdram32MBController.scala 82:57 MisterSdram32MBController.scala 95:46 MisterSdram32MBController.scala 82:57 MisterSdram32MBController.scala 100:46 MisterSdram32MBController.scala 82:57 MisterSdram32MBController.scala 82:57 MisterSdram32MBController.scala 85:45 MisterSdram32MBController.scala 82:57 MisterSdram32MBController.scala 90:45 MisterSdram32MBController.scala 82:57 MisterSdram32MBController.scala 100:46 MisterSdram32MBController.scala 82:57 MisterSdram32MBController.scala 82:57]
-  assign io_sdram_ras = 1'h1; // @[MisterSdram32MBController.scala 108:18 MisterSdram32MBController.scala 83:87 MisterSdram32MBController.scala 82:82 MisterSdram32MBController.scala 85:70 MisterSdram32MBController.scala 82:82 MisterSdram32MBController.scala 95:72 MisterSdram32MBController.scala 82:82 MisterSdram32MBController.scala 100:71 MisterSdram32MBController.scala 82:82 MisterSdram32MBController.scala 82:82 MisterSdram32MBController.scala 85:70 MisterSdram32MBController.scala 82:82 MisterSdram32MBController.scala 90:71 MisterSdram32MBController.scala 82:82 MisterSdram32MBController.scala 100:71 MisterSdram32MBController.scala 82:82 MisterSdram32MBController.scala 82:82]
-  assign io_sdram_cs1 = 1'h0; // @[MisterSdram32MBController.scala 109:18]
-  assign io_sdram_ba = 2'h0; // @[MisterSdram32MBController.scala 110:17 MisterSdram32MBController.scala 86:21 MisterSdram32MBController.scala 86:21 MisterSdram32MBController.scala 91:21]
-  assign io_sdram_clk = sdramClk; // @[MisterSdram32MBController.scala 118:18]
-  assign io_writeport_ack = 1'h0; // @[MisterSdram32MBController.scala 112:22 MisterSdram32MBController.scala 159:38]
-  assign io_readport_data = 16'h0; // @[MisterSdram32MBController.scala 113:22]
-  assign io_readport_ack = 1'h0; // @[MisterSdram32MBController.scala 114:21 MisterSdram32MBController.scala 187:37]
+  wire  _T_56 = ~sdramClk; // @[MisterSdram32MBController.scala 199:17]
+  assign io_sdram_dq_out = 16'h0; // @[MisterSdram32MBController.scala 97:25 MisterSdram32MBController.scala 202:21]
+  assign io_sdram_a = 13'h0; // @[MisterSdram32MBController.scala 87:20 MisterSdram32MBController.scala 96:20 MisterSdram32MBController.scala 101:20 MisterSdram32MBController.scala 87:20 MisterSdram32MBController.scala 92:20 MisterSdram32MBController.scala 101:20 MisterSdram32MBController.scala 203:16]
+  assign io_sdram_we = 1'h1; // @[MisterSdram32MBController.scala 83:37 MisterSdram32MBController.scala 82:33 MisterSdram32MBController.scala 85:21 MisterSdram32MBController.scala 82:33 MisterSdram32MBController.scala 95:21 MisterSdram32MBController.scala 82:33 MisterSdram32MBController.scala 100:21 MisterSdram32MBController.scala 82:33 MisterSdram32MBController.scala 82:33 MisterSdram32MBController.scala 85:21 MisterSdram32MBController.scala 82:33 MisterSdram32MBController.scala 90:21 MisterSdram32MBController.scala 82:33 MisterSdram32MBController.scala 100:21 MisterSdram32MBController.scala 82:33 MisterSdram32MBController.scala 82:33 MisterSdram32MBController.scala 204:17]
+  assign io_sdram_cas = 1'h1; // @[MisterSdram32MBController.scala 83:61 MisterSdram32MBController.scala 82:57 MisterSdram32MBController.scala 85:45 MisterSdram32MBController.scala 82:57 MisterSdram32MBController.scala 95:46 MisterSdram32MBController.scala 82:57 MisterSdram32MBController.scala 100:46 MisterSdram32MBController.scala 82:57 MisterSdram32MBController.scala 82:57 MisterSdram32MBController.scala 85:45 MisterSdram32MBController.scala 82:57 MisterSdram32MBController.scala 90:45 MisterSdram32MBController.scala 82:57 MisterSdram32MBController.scala 100:46 MisterSdram32MBController.scala 82:57 MisterSdram32MBController.scala 82:57 MisterSdram32MBController.scala 205:18]
+  assign io_sdram_ras = 1'h1; // @[MisterSdram32MBController.scala 83:87 MisterSdram32MBController.scala 82:82 MisterSdram32MBController.scala 85:70 MisterSdram32MBController.scala 82:82 MisterSdram32MBController.scala 95:72 MisterSdram32MBController.scala 82:82 MisterSdram32MBController.scala 100:71 MisterSdram32MBController.scala 82:82 MisterSdram32MBController.scala 82:82 MisterSdram32MBController.scala 85:70 MisterSdram32MBController.scala 82:82 MisterSdram32MBController.scala 90:71 MisterSdram32MBController.scala 82:82 MisterSdram32MBController.scala 100:71 MisterSdram32MBController.scala 82:82 MisterSdram32MBController.scala 82:82 MisterSdram32MBController.scala 206:18]
+  assign io_sdram_cs1 = 1'h0; // @[MisterSdram32MBController.scala 207:18]
+  assign io_sdram_ba = 2'h0; // @[MisterSdram32MBController.scala 86:21 MisterSdram32MBController.scala 86:21 MisterSdram32MBController.scala 91:21 MisterSdram32MBController.scala 208:17]
+  assign io_sdram_clk = sdramClk; // @[MisterSdram32MBController.scala 200:18]
+  assign io_writeport_ack = 1'h0; // @[MisterSdram32MBController.scala 143:38 MisterSdram32MBController.scala 210:22]
+  assign io_readport_data = 16'h0; // @[MisterSdram32MBController.scala 211:22]
+  assign io_readport_ack = 1'h0; // @[MisterSdram32MBController.scala 171:37 MisterSdram32MBController.scala 212:21]
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
 `define RANDOMIZE
 `endif
@@ -76,7 +76,7 @@ end // initial
     if (reset) begin
       sdramClk <= 1'h0;
     end else begin
-      sdramClk <= _T;
+      sdramClk <= _T_56;
     end
   end
 endmodule

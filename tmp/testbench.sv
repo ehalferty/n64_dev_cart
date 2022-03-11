@@ -1,5 +1,5 @@
 `timescale 1ns / 1ps
-module MainWrapper_testbench;
+module MisterSdram32MBController_testbench;
     reg clk = 0;
     wire [15:0] N64_AD;
     reg [15:0] N64_AD_o;
@@ -47,6 +47,67 @@ module MainWrapper_testbench;
         clk = ~clk;
     end
 endmodule
+
+
+// `timescale 1ns / 1ps
+// module MainWrapper_testbench;
+//     reg clk = 0;
+//     wire [15:0] N64_AD;
+//     reg [15:0] N64_AD_o;
+//     reg write = 0;
+//     assign N64_AD = (write == 1) ? N64_AD_o : 16'bZ;
+//     reg N64_READ_N = 1;
+//     reg N64_ALE_H = 1;
+//     reg N64_ALE_L = 1;
+//     wire N64_INT;
+//     Main Main_0(
+//         .clk(clk),
+//         .N64_AD(N64_AD),
+//         .N64_READ_N(N64_READ_N),
+//         .N64_ALE_H(N64_ALE_H),
+//         .N64_ALE_L(N64_ALE_L),
+//         .N64_INT4(N64_INT4)
+//     );
+//     initial
+//     begin
+//         $dumpfile("dump.vcd");
+//         $dumpvars(5);
+//         #10
+//         write = 1; // Set AD direction to write
+//         N64_AD_o = 16'h0000; N64_ALE_H = 0; #10 // Clock in address high
+//         N64_AD_o = 16'h0000; N64_ALE_L = 0; #10 // Clock in address low
+//         write = 0; // Set AD direction to read
+//         N64_READ_N = 0; #10 // Clock in read
+//         N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
+//         N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
+//         N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
+//         N64_ALE_H = 1; N64_ALE_L = 1; N64_READ_N = 1; #10 // Reset for next burst
+//         write = 1; // Set AD direction to write
+//         N64_AD_o = 16'h0001; N64_ALE_H = 0; #10 // Clock in address high
+//         N64_AD_o = 16'hB420; N64_ALE_L = 0; #10 // Clock in address low
+//         write = 0; // Set AD direction to read
+//         N64_READ_N = 0; #10 // Clock in read
+//         N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
+//         N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
+//         N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
+        
+//         #1000;
+//         $finish();
+//     end
+//     always #1 begin
+//         clk = ~clk;
+//     end
+// endmodule
+
+
+
+
+
+
+
+
+
+
 // `timescale 1ns / 1ps
 // module FragmentProcessorWithSRAMInterface_testbench;
 //   reg clock = 0;
