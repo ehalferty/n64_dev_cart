@@ -65,7 +65,7 @@ module MisterSdram32MBController_testbench;
         // N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
         // N64_READ_N = 1; #10 N64_READ_N = 0; #10 // Clock in next read
         
-        #1000;
+        #10000;
         $finish();
     end
     always #1 begin
