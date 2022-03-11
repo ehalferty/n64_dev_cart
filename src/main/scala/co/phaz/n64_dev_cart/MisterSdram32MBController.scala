@@ -48,7 +48,7 @@ class MisterSdram32MBController() extends Module {
     val io = IO(new Bundle {
         val sdram_dq_in = Input(UInt(16.W))
         val sdram_dq_out = Output(UInt(16.W))
-        val sdram_a_out = Output(UInt(13.W))
+        val sdram_a = Output(UInt(13.W))
         val sdram_we = Output(Bool())
         val sdram_cas = Output(Bool())
         val sdram_ras = Output(Bool())
@@ -65,59 +65,135 @@ class MisterSdram32MBController() extends Module {
         val readport_addr = Input(UInt(32.W))
         val readport_data = Output(UInt(16.W))
         val readport_next = Input(Bool())
+        val readport_ack = Output(Bool())
     })
+    val const_nopSlots = 5.U // TODO: Tweak this value? (60ns, so what's that? 3 50mhz cycles?) (50mhz/(1/(60ns)))
+    val const_refreshAt = 300.U // TODO: Tweak this value? (8192 times each 64ms,
+                                // so that's what? every 390 50mhz cycles?) (50mhz/(1/((64ms)/8192)))
+    val startupState = RegInit(1.U(4.W))
     val refreshState = RegInit(0.U(4.W))
     val writeState = RegInit(0.U(4.W))
     val readState = RegInit(0.U(4.W))
-    val refreshCounter = RegInit(0.W(32.W))
+    val refreshCounter = RegInit(0.U(32.W))
     val sdramClk = RegInit(false.B)
     val waitCounter = RegInit(0.U(4.W))
+    val latchedAddr = RegInit(0.U(32.W))
+    val latchedData = RegInit(0.U(16.W))
     def outputNOP { io.sdram_we := true.B; io.sdram_cas := true.B ; io.sdram_ras := true.B }
     def outputRefresh { io.sdram_we := true.B; io.sdram_cas := false.B ; io.sdram_ras := false.B }
-    def outputBankActivate { io.sdram_we := true.B; io.sdram_cas := true.B ; io.sdram_ras := false.B }
+    def outputBankActivate {
+        io.sdram_we := true.B; io.sdram_cas := true.B ; io.sdram_ras := false.B
+        io.sdram_ba := latchedAddr(24, 23)
+        io.sdram_a := latchedAddr(22, 13)
+    }
+    def outputRead {
+        io.sdram_we := true.B; io.sdram_cas := false.B ; io.sdram_ras := true.B
+        io.sdram_ba := latchedAddr(24, 23)
+        io.sdram_a := "h400".U + latchedAddr(9, 0)
+    }
+    def outputWrite {
+        io.sdram_we := false.B; io.sdram_cas := false.B ; io.sdram_ras := true.B
+        io.sdram_a := latchedAddr(9, 0)
+        io.sdram_dq_out := latchedData
+    }
+    def outputPrechargeAll {
+        io.sdram_we := false.B; io.sdram_cas := true.B ; io.sdram_ras := false.B
+        io.sdram_a := "h400".U // Set A10
+    }
     sdramClk := ~sdramClk
     io.sdram_clk := sdramClk
-    io.sdram_ba := 0 // Just use one bank for now
+    io.sdram_ba := 0.U // Just use one bank for now
     when (sdramClk) {
-        when (refreshState != 0) {
-            when (refreshState == 1) {
-                // Bippity-boppity, give him the zoppity
+        when (startupState != 0.U) {
+            // ================== STARTUP ==================
+            // TODO: Do startup stuff
+        }.elsewhen (refreshState != 0.U) {
+            // ================== REFRESH ==================
+            when (refreshState === 1.U) {
                 outputRefresh
-                refreshState := 2
-                waitCounter := 0
-            }.elsewhen (refreshState == 2) {
-                when (waitCounter > 5) { // TODO: Tweak this value? (60ns, so what's that? 3 50mhz cycles?) (50mhz/(1/(60ns)))
-                    refreshState := 0 // Back to idle
-                    outputRefresh
-                }.otherwise {
+                refreshState := 2.U
+                waitCounter := 0.U
+            }.elsewhen (refreshState === 2.U) { // NOP slots after refresh
+                outputNOP
+                when (waitCounter > const_nopSlots) { refreshState := 0.U }.otherwise { waitCounter := waitCounter + 1.U }
+            }
+        }.elsewhen (writeState != 0.U) {
+            // ================== WRITE ==================
+            when (writeState === 1.U) { // Bank activate
+                outputBankActivate
+                writeState := 2.U
+                waitCounter := 0.U
+            }.elsewhen (writeState === 2.U) { // NOP slots after activate
+                outputNOP
+                when (waitCounter > const_nopSlots) { writeState := 3.U }.otherwise { waitCounter := waitCounter + 1.U }
+            }.elsewhen (writeState === 3.U) { // Do write
+                outputWrite
+                writeState := 4.U
+                waitCounter := 0.U
+            }.elsewhen (writeState === 4.U) { // NOP slots after write
+                outputNOP
+                when (waitCounter > const_nopSlots) { writeState := 5.U }.otherwise { waitCounter := waitCounter + 1.U }
+            }.elsewhen (writeState === 5.U) { // Do prechargeAll
+                outputPrechargeAll
+                writeState := 6.U
+            }.elsewhen (writeState === 6.U) { // NOP slots after prechargeAll
+                outputNOP
+                when (waitCounter > const_nopSlots) { writeState := 7.U }.otherwise { waitCounter := waitCounter + 1.U }
+            }.otherwise { // Assert writeport_ack, wait for writeport_wr to be deasserted
+                when (io.writeport_wr === false.B) { writeState := 0.U }.otherwise {
                     outputNOP
-                    waitCounter := waitCounter + 1
+                    io.writeport_ack := true.B
                 }
             }
-        }.elsewhen (writeState != 0) {
-            when (writeState == 1) { // Bank activate
+        }.elsewhen (readState != 0.U) {
+            // ================== READ ==================
+            when (readState === 1.U) { // Bank activate
                 outputBankActivate
-                writeState := 2
-                waitCounter := 0
-            }.elsewhen (writeState == 2) {
-                //
+                readState := 2.U
+                waitCounter := 0.U
+            }.elsewhen (readState === 2.U) { // NOP slots after activate
+                outputNOP
+                when (waitCounter > const_nopSlots) { readState := 3.U }.otherwise { waitCounter := waitCounter + 1.U }
+            }.elsewhen (readState === 3.U) { // Do read
+                outputRead
+                readState := 4.U
+                waitCounter := 0.U
+            }.elsewhen (readState === 4.U) { // NOP slots after read (also grab the result here)
+                outputNOP
+                when (waitCounter > const_nopSlots) { readState := 5.U }.otherwise { waitCounter := waitCounter + 1.U }
+            }.elsewhen (readState === 5.U) { // Do prechargeAll
+                outputPrechargeAll
+                readState := 6.U
+            }.elsewhen (readState === 6.U) { // NOP slots after prechargeAll
+                outputNOP
+                when (waitCounter > const_nopSlots) { readState := 7.U }.otherwise { waitCounter := waitCounter + 1.U }
+            }.otherwise { // Assert readport_ack, wait for readport_rd to be deasserted
+                when (io.readport_rd === false.B) { readState := 0.U }.otherwise {
+                    outputNOP
+                    io.readport_ack := true.B
+                }
             }
-            // TODO: Do writing stuff
-        }.elsewhen (readState != 0) {
             // TODO: Do reading stuff
-        }.elsewhen (refreshCounter > 300.U) { // TODO: Tweak this value? (8192 times each 64ms, so that's what? every 390 50mhz cycles?) (50mhz/(1/((64ms)/8192)))
+        }.elsewhen (refreshCounter > const_refreshAt) {
+            // ================== START REFRESH ==================
             // Idle and need to do a refresh, so start it
-            refreshState := 1
-            refreshCounter := 0
+            refreshState := 1.U
+            refreshCounter := 0.U
         }.elsewhen (io.writeport_wr) {
+            // ================== START WRITE ==================
             // User is starting a write on the write port...
-            writeState := 1
+            latchedAddr := io.writeport_addr
+            latchedData := io.writeport_data
+            writeState := 1.U
         }.elsewhen (io.readport_rd) {
+            // ================== START READ ==================
             // User is starting a read on the read port...
-            writeState := 1
+            latchedAddr := io.writeport_addr
+            readState := 1.U
         }.otherwise {
+            // ================== IDLE ==================
             // Idle, wait for refresh...
-            refreshCounter := refreshCounter + 1;
+            refreshCounter := refreshCounter + 1.U;
         }
     }
 }
