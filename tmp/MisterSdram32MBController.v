@@ -27,14 +27,41 @@ reg [3:0] refresh_state = 0;
 reg [3:0] write_state = 0;
 reg [3:0] read_state = 0;
 reg [31:0] refresh_counter = 0;
-reg [31:0] wait_counter = 0;
+reg [31:0] wt_cnt = 0;
+reg [15:0] latched_addr = 0;
+reg [31:0] latched_data = 0;
+reg initial_state = 1;
+
+`define INIT_WAIT wt_cnt <= 0;
+`define WAIT_NOP_SLOTS(done) `ISSUE_NOP; if (wt_cnt == NOP_SLOTS) begin; refresh_state <= 0; end else begin; wt_cnt <= wt_cnt + 1; end
+`define ISSUE_NOP sdram_we <= 1; sdram_cas <= 1; sdram_ras <= 1;
+`define ISSUE_REFRESH sdram_we <= 1; sdram_cas <= 0; sdram_ras <= 0;
 always @(posedge clk) begin
-    if (refresh_state != 0) begin
+    if (initial_state) begin
+        // TODO: Startup stuff
+        initial_state <= 0;
+    end else if (refresh_state != 0) begin
+        if (refresh_state == 1) begin
+            `ISSUE_REFRESH
+            refresh_state <= 2;
+            `INIT_WAIT
+        end else begin
+            `WAIT_NOP_SLOTS(refresh_state <= 0)
+        end
     end else if (write_state != 0) begin
     end else if (read_state != 0) begin
-    end else if (refresh_counter > REFRESH_AT) begin
+    end else if (refresh_counter > REFRESH_AT) begin // QUESTION: Can a refresh squeeze in before a cart read in time???
         refresh_state <= 1;
         refresh_counter <= 0;
+    end else if (writeport_wr) begin
+        latched_addr <= writeport_addr;
+        latched_data <= writeport_data;
+        write_state <= 1;
+    end else if (readport_rd) begin
+        latched_addr <= writeport_addr;
+        read_state <= 1;
+    end else begin
+        refresh_counter <= refresh_counter + 1;
     end
     sdram_clk <= ~sdram_clk;
 end
