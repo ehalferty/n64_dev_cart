@@ -100,9 +100,23 @@ class MisterSdram32MBController() extends Module {
         io.sdram_we := false.B; io.sdram_cas := true.B ; io.sdram_ras := false.B
         io.sdram_a := "h400".U // Set A10
     }
+    // Default values
+    io.sdram_dq_out := 0.U
+    io.sdram_a := 0.U
+    io.sdram_we := true.B
+    io.sdram_cas := true.B
+    io.sdram_ras := true.B
+    io.sdram_cs1 := false.B
+    io.sdram_ba := 0.U
+    // io.sdram_clk := false.B
+    io.writeport_ack := false.B
+    io.readport_data := 0.U
+    io.readport_ack := false.B
+
+    // Divide chisel clock by 2 to get SDRAM clock
     sdramClk := ~sdramClk
     io.sdram_clk := sdramClk
-    io.sdram_ba := 0.U // Just use one bank for now
+    // Do stuff on the cadence of the SDRAM clock
     when (sdramClk) {
         when (startupState != 0.U) {
             // ================== STARTUP ==================
