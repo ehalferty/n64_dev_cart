@@ -116,6 +116,8 @@ class MisterSdram32MBController() extends Module {
                 when (waitCounter > const_nopSlots) { refreshState := 0.U }.otherwise { waitCounter := waitCounter + 1.U }
             }
         }.elsewhen (writeState =/= 0.U) {
+
+
             // ================== WRITE ==================
             when (writeState === 1.U) { // Bank activate
                 outputBankActivate
@@ -143,6 +145,9 @@ class MisterSdram32MBController() extends Module {
                     io.writeport_ack := true.B
                 }
             }
+
+
+
         }.elsewhen (readState =/= 0.U) {
             // ================== READ ==================
             when (readState === 1.U) { // Bank activate

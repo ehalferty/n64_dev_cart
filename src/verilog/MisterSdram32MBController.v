@@ -36,6 +36,10 @@ reg initial_state = 1;
 `define WAIT_NOP_SLOTS(done) `ISSUE_NOP; if (wt_cnt == NOP_SLOTS) begin; done; end else begin; wt_cnt <= wt_cnt + 1; end
 `define ISSUE_NOP sdram_we <= 1; sdram_cas <= 1; sdram_ras <= 1;
 `define ISSUE_REFRESH sdram_we <= 1; sdram_cas <= 0; sdram_ras <= 0;
+`define ISSUE_BANK_ACTIVATE sdram_we <= 1; sdram_cas <= 1; sdram_ras <= 0; \
+    sdram_ba <= latched_addr[24:23]; sdram_a <= latched_addr[22:13];
+`define ISSUE_WRITE sdram_we <= 0; sdram_cas <= 0; sdram_ras <= 1; \
+    sdram_a <= latched_addr[9:0]; sdram_dq_out <= latched_data;
 always @(posedge clk) begin
     if (initial_state) begin
         // TODO: Startup stuff
@@ -49,6 +53,32 @@ always @(posedge clk) begin
             `WAIT_NOP_SLOTS(refresh_state <= 0)
         end
     end else if (write_state != 0) begin
+        if (write_state == 1) begin // Activate
+            `ISSUE_BANK_ACTIVATE
+            write_state <= 2;
+            `INIT_WAIT
+        end else if (write_state == 2) begin
+            `WAIT_NOP_SLOTS(write_state <= 3)
+        end else if (write_state == 3) begin
+            `ISSUE_WRITE
+            write_state <= 4;
+            `INIT_WAIT
+        end else if (write_state == 4) begin
+            `WAIT_NOP_SLOTS(write_state <= 5)
+        end else if (write_state == 5) begin
+            `ISSUE_PRECHARGE_ALL
+            write_state <= 6;
+            `INIT_WAIT
+        end else if (write_state == 6) begin
+            `WAIT_NOP_SLOTS(write_state <= 7)
+        end else if (write_state == 7) begin
+            if (!writeport_wr) begin
+                writeport_ack <= 0;
+                write_state <= 0;
+            end else begin
+                writeport_ack <= 1;
+            end
+        end
     end else if (read_state != 0) begin
     end else if (refresh_counter > REFRESH_AT) begin // QUESTION: Can a refresh squeeze in before a cart read in time???
         refresh_state <= 1;
