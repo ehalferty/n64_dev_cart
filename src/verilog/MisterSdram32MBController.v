@@ -3,7 +3,6 @@ module MisterSdram32MBController #(
   parameter REFRESH_AT = 300
 ) (
   input             clk,
-  input             rst,
   inout      [15:0] sdram_dq,
   output reg [11:0] sdram_a = 0,
   output reg        sdram_we = 1,
@@ -28,8 +27,8 @@ reg [3:0] write_state = 0;
 reg [3:0] read_state = 0;
 reg [31:0] refresh_counter = 0;
 reg [31:0] wt_cnt = 0;
-reg [15:0] latched_addr = 0;
-reg [31:0] latched_data = 0;
+reg [31:0] latched_addr = 0;
+reg [15:0] latched_data = 0;
 reg [15:0] sdram_dq_reg = 0;
 reg writing = 0;
 assign sdram_dq = writing ? sdram_dq_reg : 16'bZ;

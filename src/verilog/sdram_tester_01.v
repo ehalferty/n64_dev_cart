@@ -1,13 +1,5 @@
-module Main(
+module SdramTester01(
   input clk,
-
-  input to_fpga_valid,
-  input [1:0] to_fpga_data,
-  output to_fpga_ack,
-
-  output from_fpga_valid,
-  output [1:0] from_fpga_data,
-  input from_fpga_ack,
 
   inout   [15:0] sdram_dq,
   output  [11:0] sdram_a = 0,
@@ -28,6 +20,8 @@ module Main(
   wire [15:0] readport_data;
   wire readport_ack;
 
+  reg [32:0] counter = 0;
+
   MisterSdram32MBController MisterSdram32MBController_0(
     .clk(clk),
     .sdram_dq(sdram_dq),
@@ -47,4 +41,13 @@ module Main(
     .readport_data(readport_data),
     .readport_ack(readport_ack)
   );
+
+  always @ (posedge clk) begin
+      if (counter > 100) begin
+          
+          counter <= 0;
+      end else begin
+          counter <= counter + 1;
+      end
+  end
 endmodule

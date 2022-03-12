@@ -44,7 +44,14 @@ module MisterSdram32MBController_testbench;
     begin
         $dumpfile("dump.vcd");
         $dumpvars(5);
-        #10
+        #200
+        writeport_wr = 1;
+        writeport_addr = 32'h000005A0;
+        writeport_data = 16'h77;
+        #2
+        writeport_wr = 0;
+        writeport_addr = 0;
+        writeport_data = 0;
         // write = 1; // Set AD direction to write
         // N64_AD_o = 16'h0000; N64_ALE_H = 0; #10 // Clock in address high
         // N64_AD_o = 16'h0000; N64_ALE_L = 0; #10 // Clock in address low
