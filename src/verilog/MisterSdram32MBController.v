@@ -22,6 +22,7 @@ module MisterSdram32MBController #(
 //   input             readport_next,
   output reg        readport_ack = 0
 );
+reg [3:0] setup_state = 1;
 reg [3:0] refresh_state = 0;
 reg [3:0] write_state = 0;
 reg [3:0] read_state = 0;
@@ -29,13 +30,13 @@ reg [31:0] refresh_counter = 0;
 reg [31:0] wt_cnt = 0;
 reg [15:0] latched_addr = 0;
 reg [31:0] latched_data = 0;
-reg initial_state = 1;
 reg [15:0] sdram_dq_reg = 0;
 reg writing = 0;
 assign sdram_dq = writing ? sdram_dq_reg : 16'bZ;
 
 `define INIT_WAIT wt_cnt <= 0;
-`define WAIT_NOP_SLOTS(done) `ISSUE_NOP; if (wt_cnt == NOP_SLOTS) begin; done; end else begin; wt_cnt <= wt_cnt + 1; end
+`define WAIT_NOP_SLOTS(done) `ISSUE_NOP; if (wt_cnt == NOP_SLOTS) begin; done; end \
+    else begin; wt_cnt <= wt_cnt + 1; end
 `define ISSUE_NOP sdram_we <= 1; sdram_cas <= 1; sdram_ras <= 1; writing <= 0;
 `define ISSUE_REFRESH sdram_we <= 1; sdram_cas <= 0; sdram_ras <= 0;
 `define ISSUE_BANK_ACTIVATE sdram_we <= 1; sdram_cas <= 1; sdram_ras <= 0; \
@@ -45,10 +46,41 @@ assign sdram_dq = writing ? sdram_dq_reg : 16'bZ;
 `define ISSUE_READ sdram_we <= 1; sdram_cas <= 0; sdram_ras <= 1; \
     sdram_ba <= latched_addr[24:23]; sdram_a <= 12'h400 + latched_addr[9:0];
 `define ISSUE_PRECHARGE_ALL sdram_we <= 0; sdram_cas <= 1; sdram_ras <= 0; sdram_a <= 12'h400;
+`define ISSUE_MODE_REGISTER_SET(data) sdram_we <= 0; sdram_cas <= 0; sdram_ras <= 0; \
+    sdram_a <= 12'b001000110000; sdram_ba <= 2'b00;
 always @(posedge clk) begin
-    if (initial_state) begin
-        // TODO: Startup stuff
-        initial_state <= 0;
+    if (setup_state != 0) begin
+        if (setup_state == 1) begin
+            `ISSUE_NOP
+            refresh_state <= 2;
+            `INIT_WAIT
+        end else if (setup_state == 2) begin
+            `WAIT_NOP_SLOTS(setup_state <= 3)
+        end else if (setup_state == 3) begin
+            `ISSUE_PRECHARGE_ALL
+            refresh_state <= 4;
+            `INIT_WAIT
+        end else if (setup_state == 4) begin
+            `WAIT_NOP_SLOTS(setup_state <= 5)
+        end else if (setup_state == 5) begin
+            `ISSUE_REFRESH
+            refresh_state <= 6;
+            `INIT_WAIT
+        end else if (setup_state == 6) begin
+            `WAIT_NOP_SLOTS(setup_state <= 7)
+        end else if (setup_state == 7) begin
+            `ISSUE_REFRESH
+            refresh_state <= 8;
+            `INIT_WAIT
+        end else if (setup_state == 8) begin
+            `WAIT_NOP_SLOTS(setup_state <= 9)
+        end else if (setup_state == 9) begin
+            `ISSUE_MODE_REGISTER_SET
+            refresh_state <= 10;
+            `INIT_WAIT
+        end else if (setup_state == 10) begin
+            `WAIT_NOP_SLOTS(setup_state <= 0)
+        end
     end else if (refresh_state != 0) begin
         if (refresh_state == 1) begin
             `ISSUE_REFRESH
