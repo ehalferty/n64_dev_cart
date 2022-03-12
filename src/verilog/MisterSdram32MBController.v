@@ -50,7 +50,7 @@ assign sdram_dq = writing ? sdram_dq_reg : 16'bZ;
     sdram_a <= 12'b001000110000; sdram_ba <= 2'b00;
 always @(posedge clk) begin
     if (sdram_clk) begin
-        if (setup_state != 0) begin
+        if (setup_state != 0) begin // SETUP
             if (setup_state == 1) begin
                 `ISSUE_NOP
                 setup_state <= 2;
@@ -82,7 +82,7 @@ always @(posedge clk) begin
             end else if (setup_state == 10) begin
                 `WAIT_NOP_SLOTS(setup_state <= 0)
             end
-        end else if (refresh_state != 0) begin
+        end else if (refresh_state != 0) begin // REFRESH
             if (refresh_state == 1) begin
                 `ISSUE_REFRESH
                 refresh_state <= 2;
@@ -90,8 +90,8 @@ always @(posedge clk) begin
             end else begin
                 `WAIT_NOP_SLOTS(refresh_state <= 0)
             end
-        end else if (write_state != 0) begin
-            if (write_state == 1) begin // Activate
+        end else if (write_state != 0) begin // WRITE
+            if (write_state == 1) begin
                 `ISSUE_BANK_ACTIVATE
                 write_state <= 2;
                 `INIT_WAIT
@@ -117,8 +117,8 @@ always @(posedge clk) begin
                     writeport_ack <= 1;
                 end
             end
-        end else if (read_state != 0) begin
-            if (read_state == 1) begin // Activate
+        end else if (read_state != 0) begin // READ
+            if (read_state == 1) begin
                 `ISSUE_BANK_ACTIVATE
                 read_state <= 2;
                 `INIT_WAIT
@@ -130,7 +130,9 @@ always @(posedge clk) begin
                 `INIT_WAIT
             end else if (read_state == 4) begin
                 `WAIT_NOP_SLOTS(read_state <= 5)
-                readport_data <= sdram_dq;
+                if (wt_cnt == NOP_SLOTS) begin
+                    readport_data <= sdram_dq;
+                end
             end else if (write_state == 5) begin
                 `ISSUE_PRECHARGE_ALL
                 read_state <= 6;
