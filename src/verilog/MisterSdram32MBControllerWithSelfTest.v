@@ -34,6 +34,8 @@ module MisterSdram32MBControllerWithSelfTest (
       end else if (state == 3) begin // Wait for awhile
       end else if (state == 4) begin // Issue a read
       end else if (state == 5) begin // Wait for ack
+      end else if (state == 6) begin // Wait for awhile
+      // TODO: Loop back to state 1 and do this a few more times? fibonacci increase addr each time? check usable mem space?
       end
   end
   MisterSdram32MBController MisterSdram32MBController_0(
